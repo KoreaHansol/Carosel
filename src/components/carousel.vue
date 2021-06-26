@@ -1,12 +1,8 @@
 <template>
   <div class="wrapper">
-    
     <div class="button-left" 
       @click="moveLeft" 
     />
-
-
-    
     <div class="slider-wrapper" ref="sliderWrapper">
       <div class="slider" 
           @mousedown="mouseDown( $event )"
@@ -22,16 +18,9 @@
           <span class="font-item">{{ item.value }}</span>
         </div>
       </div>
-     
     </div>
-
-
-
     <div class="button-right" @click="moveRight"
     />
-      
-
-      
   </div>
 </template>
 
