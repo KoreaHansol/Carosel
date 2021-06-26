@@ -34,13 +34,13 @@ export default {
         return []
       }
     },
-    fillAuto: {
+    fillAuto: { // 지정하지않으면 기본 item width 값은 100px 입니다
       type: Boolean,
       default() {
         return false
       }
     },
-    displayCount: {
+    displayCount: { // fillAuto를 지정하지 않으면 의미가 없습니다
       type: Number,
       default() {
         return 5

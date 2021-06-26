@@ -43,7 +43,7 @@ export default {
 #app {
   display: flex;
   border: 1px solid black;
-  width: 50%;
+  width: 100%;
   height: 200px;
 }
 .carosel {
