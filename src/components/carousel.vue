@@ -86,7 +86,7 @@ export default {
   },
   methods: {
     initCarousel() {
-      this.$nextTick( () => {
+      this.$nextTick( () => { // UI가 생성되고 나서 init 진행
         this.slider = this.$refs.sliderWrapper.firstChild
         this.sliderWrapper = this.$refs.sliderWrapper
 
@@ -99,16 +99,19 @@ export default {
       } )
     },
     moveLeft() {
-      if( this.posX >= 0 ) {
+      if( this.posX >= 0 ) { // overflow 방지
         this.leftButtonActive = false
         return
       }
-      console.log( 'this.posX', this.posX )
       
+      if( Math.abs( this.posX ) < Math.abs( this.childOffsetWidth ) * this.moveCounter ) { // 잔여물
+        this.slider.style.transform = `translateX(${ this.posX + Math.abs( this.posX ) }px)`
+        this.posX = 0
+        return
+      }
 
       this.posX = ( this.posX + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
-      
-      this.slider.style.transform = `translateX(${this.posX * 1}px)`
+      this.slider.style.transform = `translateX(${ this.posX * 1 }px)`
 
     },
     moveRight() {
@@ -121,14 +124,13 @@ export default {
 
       if( this.slider.offsetWidth - ( Math.abs( this.posX ) + this.sliderWrapper.offsetWidth ) < this.moveCounter * this.childOffsetWidth ) {
         const residual = this.slider.offsetWidth - ( this.sliderWrapper.offsetWidth + Math.abs( this.posX ) ) // 잔여물
-        console.log( 'residual', residual )
-        this.slider.style.transform = `translateX(${this.posX - residual}px)` // 잔여물 만큼만 이동
+        this.slider.style.transform = `translateX(${ this.posX - residual }px)` // 잔여물 만큼만 이동
         this.posX = this.posX - residual
         return
       }
 
       this.posX = ( this.posX - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
-      this.slider.style.transform = `translateX(${this.posX}px)`
+      this.slider.style.transform = `translateX(${ this.posX }px)`
     },
     // 여기부터 스크롤 안쓰려고 만든건데 touch는 어떻게 할지 생각해야 할듯 ( 마우스만됨 )
     mouseDown( event ) {
