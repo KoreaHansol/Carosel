@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Carousel
+    class="carosel"
     :list="list"
     :fillAuto="true"
     :displayCount="5"
@@ -41,9 +42,11 @@ export default {
 <style>
 #app {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  border: 1px solid black;
   width: 50%;
   height: 200px;
+}
+.carosel {
+  height: 50px;
 }
 </style>
