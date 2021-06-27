@@ -7,7 +7,7 @@
       <div class="slider">
         <div class="item" v-for="( item, idx ) in list" 
           :key="item.value + idx"
-          @click="selecedKey=item.value + idx"
+          @click="onSelectItem( item, idx )"
           :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
         >
           <span class="font-item">{{ item.value }}</span>
@@ -111,25 +111,11 @@ export default {
       this.posX = ( this.posX + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
       this.sliderWrapper.scrollLeft = Math.abs( this.posX )
     },
-    // 여기부터 스크롤 안쓰려고 만든건데 touch는 어떻게 할지 생각해야 할듯 ( 마우스만됨 )
-    mouseDown( event ) {
-      this.mouseStatus = true
-      this.dragClientX = event.clientX
-    },
-    mouseLeave() {
-      this.mouseStatus = false
-    },
-    mouseUp() {
-      this.mouseStatus = false
-    },
-    mouseMove( event ) {
-      if( !this.mouseStatus ) {
-        return
-      }
-      let offset = this.dragClientX - event.clientX
-      this.dragClientX = event.clientX
-      this.posX = ( this.posX - offset ).toFixed(1) * 1
-      this.slider.style.transform = `translateX(${this.posX}px)`
+    onSelectItem( item, idx ) {
+      const { value } = item
+      this.selecedKey = value + idx
+
+      this.$emit( 'selectedItem', item )
     },
     //스크롤 처리
     onScroll( event ) {
