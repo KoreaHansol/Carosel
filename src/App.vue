@@ -5,7 +5,7 @@
     :list="list"
     :fillAuto="true"
     :displayCount="5"
-    :moveCounter="3"
+    :moveCounter="2"
     />
   </div>
 </template>
@@ -20,19 +20,19 @@ export default {
   data() {
     return {
       list: [
-        { value: '1' },
-        { value: '2' },
-        { value: '3' },
-        { value: '4' },
-        { value: '5' },
-        { value: '6' },
-        { value: '7' },
-        { value: '8' },
-        { value: '9' },
-        { value: '10' },
-        { value: '11' },
-        { value: '12' },
-        { value: '13' },
+        { value: '한식' },
+        { value: '양식' },
+        { value: '한식3' },
+        { value: '한식4' },
+        { value: '한식5' },
+        { value: '한식6' },
+        { value: '한식7' },
+        { value: '한식8' },
+        { value: '한식9' },
+        { value: '한식10' },
+        { value: '한식11' },
+        { value: '한식12' },
+        { value: '한식13' },
       ],
     }
   }

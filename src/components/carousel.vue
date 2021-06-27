@@ -3,13 +3,13 @@
     <div class="button-left" 
       @click="moveLeft" 
     />
-    <div class="slider-wrapper" ref="sliderWrapper">
+    <div class="slider-wrapper" ref="sliderWrapper" v-on:scroll="onScroll( $event )">
       <div class="slider" 
-          @mousedown="mouseDown( $event )"
+        >
+         <!-- @mousedown="mouseDown( $event )"
           @mousemove="mouseMove( $event )"
           @mouseup="mouseUp( $event )"
-          @mouseleave="mouseLeave( $event )"
-        >
+          @mouseleave="mouseLeave( $event )" -->
         <div class="item" v-for="( item, idx ) in list" 
           :key="item.value + idx"
           @click="selecedKey=item.value + idx"
@@ -94,13 +94,15 @@ export default {
       }
       
       if( Math.abs( this.posX ) < Math.abs( this.childOffsetWidth ) * this.moveCounter ) { // 잔여물
-        this.slider.style.transform = `translateX(${ this.posX + Math.abs( this.posX ) }px)`
+        // this.slider.style.transform = `translateX(${ this.posX + Math.abs( this.posX ) }px)`
+        this.sliderWrapper.scrollLeft = Math.abs( this.posX - Math.abs( this.posX ) )
         this.posX = 0
         return
       }
 
-      this.posX = ( this.posX + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
-      this.slider.style.transform = `translateX(${ this.posX * 1 }px)`
+      this.posX = ( this.posX - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
+      this.sliderWrapper.scrollLeft = Math.abs( this.posX * 1 )
+      // this.slider.style.transform = `translateX(${ this.posX * 1 }px)`
 
     },
     moveRight() {
@@ -112,14 +114,15 @@ export default {
       }
 
       if( this.slider.offsetWidth - ( Math.abs( this.posX ) + this.sliderWrapper.offsetWidth ) < this.moveCounter * this.childOffsetWidth ) {
-        const residual = this.slider.offsetWidth - ( this.sliderWrapper.offsetWidth + Math.abs( this.posX ) ) // 잔여물
-        this.slider.style.transform = `translateX(${ this.posX - residual }px)` // 잔여물 만큼만 이동
-        this.posX = this.posX - residual
+        const residual = this.slider.offsetWidth + ( this.sliderWrapper.offsetWidth + Math.abs( this.posX ) ) // 잔여물
+        this.sliderWrapper.scrollLeft = Math.abs( this.posX - residual )
+        this.posX = this.posX + residual
         return
       }
-
-      this.posX = ( this.posX - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
-      this.slider.style.transform = `translateX(${ this.posX }px)`
+ 
+      this.posX = ( this.posX + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
+      this.sliderWrapper.scrollLeft = Math.abs( this.posX )
+      // this.slider.style.transform = `translateX(${ this.posX }px)`
     },
     // 여기부터 스크롤 안쓰려고 만든건데 touch는 어떻게 할지 생각해야 할듯 ( 마우스만됨 )
     mouseDown( event ) {
@@ -143,6 +146,10 @@ export default {
       console.log( this.posX )
       this.slider.style.transform = `translateX(${this.posX}px)`
     },
+    //스크롤 처리
+    onScroll( event ) {
+      this.posX = event.target.scrollLeft
+    },
   }
 }
 </script>
@@ -156,8 +163,10 @@ export default {
       display: flex;
       flex: 1 1 auto;
       max-width: 100%;
-      overflow: hidden;
+      overflow: auto;
+      // overflow: hidden;
       user-select: none;
+      scroll-behavior: smooth;
 
       .slider {
         display: flex;
