@@ -6,6 +6,7 @@
     :fillAuto="true"
     :displayCount="5"
     :moveCounter="3"
+    @selectedItem="select"
     />
   </div>
 </template>
@@ -34,6 +35,11 @@ export default {
         { value: '한식12' },
         { value: '한식13' },
       ],
+    }
+  },
+  methods: {
+    select( item ) {
+      console.log( 'selected Item is : ', item )
     }
   }
 }

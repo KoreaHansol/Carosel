@@ -7,7 +7,7 @@
       <div class="slider">
         <div class="item" v-for="( item, idx ) in list" 
           :key="item.value + idx"
-          @click="selecedKey=item.value + idx"
+          @click="onItemClick( item, idx )"
           :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
         >
           <span class="font-item">{{ item.value }}</span>
@@ -53,12 +53,9 @@ export default {
   },
   data() {
     return {
-      posX: 0,
       slider: null,
       sliderWrapper: null, // wrapper는 overflow: hidden을 slider에 직접 먹였을때 요소가 짤려서 나오기때문에 만든것
       childOffsetWidth: 0, // item의 offsetWidth ( margin, padding 포함 )
-      itemWidth: 0,
-      dragClientX: 0,
       mouseStatus: false,
 
       selecedKey: null,
@@ -83,63 +80,45 @@ export default {
       } )
     },
     moveLeft() {
-      if( this.posX <= 0 ) { // overflow 방지
+      if( this.sliderWrapper.scrollLeft <= 0 ) { // overflow 방지
         this.leftButtonActive = false
-        this.posX = 0
+        this.sliderWrapper.scrollLeft = 0
         return
       }
       
-      if( Math.abs( this.posX ) < Math.abs( this.childOffsetWidth ) * this.moveCounter ) { // 잔여물
+      if( this.sliderWrapper.scrollLeft < this.childOffsetWidth * this.moveCounter ) { // 잔여물
         this.sliderWrapper.scrollLeft = 0
-        this.posX = 0
         return
       }
 
-      this.posX = ( this.posX - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
-      this.sliderWrapper.scrollLeft = Math.abs( this.posX * 1 )
+      this.sliderWrapper.scrollLeft = ( this.sliderWrapper.scrollLeft - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
     },
     moveRight() {
-      // 화면에서 보이는 left쪽에 붙어있는 시작거리는 this.posX
+      // 화면에서 보이는 left쪽에 붙어있는 시작거리는 this.sliderWrapper.scrollLeft
       const overflow = this.slider.offsetWidth - this.sliderWrapper.offsetWidth
-      if( overflow < Math.abs( this.posX ) ) { // 더 이동하는걸 방지
+      if( overflow < this.sliderWrapper.scrollLeft ) { // 더 이동하는걸 방지
         this.rightButtonActive = false
         return
       }
 
-      if( this.slider.offsetWidth - ( Math.abs( this.posX ) + this.sliderWrapper.offsetWidth ) < this.moveCounter * this.childOffsetWidth ) {
-        const residual = this.slider.offsetWidth + ( this.sliderWrapper.offsetWidth + Math.abs( this.posX ) ) // 잔여물
-        this.sliderWrapper.scrollLeft = Math.abs( this.posX - residual )
+      if( this.slider.offsetWidth - ( this.sliderWrapper.scrollLeft + this.sliderWrapper.offsetWidth ) < this.moveCounter * this.childOffsetWidth ) {
+        const residual = this.slider.offsetWidth + ( this.sliderWrapper.offsetWidth + this.sliderWrapper.scrollLeft ) // 잔여물
+        this.sliderWrapper.scrollLeft = Math.abs( this.sliderWrapper.scrollLeft - residual )
         return
       }
  
-      this.posX = ( this.posX + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
-      this.sliderWrapper.scrollLeft = Math.abs( this.posX )
-    },
-    // 여기부터 스크롤 안쓰려고 만든건데 touch는 어떻게 할지 생각해야 할듯 ( 마우스만됨 )
-    mouseDown( event ) {
-      this.mouseStatus = true
-      this.dragClientX = event.clientX
-    },
-    mouseLeave() {
-      this.mouseStatus = false
-    },
-    mouseUp() {
-      this.mouseStatus = false
-    },
-    mouseMove( event ) {
-      if( !this.mouseStatus ) {
-        return
-      }
-      let offset = this.dragClientX - event.clientX
-      this.dragClientX = event.clientX
-
-      this.posX = ( this.posX - offset ).toFixed(1) * 1
-      this.slider.style.transform = `translateX(${this.posX}px)`
+      this.sliderWrapper.scrollLeft = ( this.sliderWrapper.scrollLeft + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
     },
     //스크롤 처리
     onScroll( event ) {
-      this.posX = event.target.scrollLeft
+      this.sliderWrapper.scrollLeft = event.target.scrollLeft
     },
+    onItemClick( item, idx ) {
+      const { value } = item
+      this.selecedKey = value + idx
+
+      this.$emit( 'selectedItem', item )
+    }
   }
 }
 </script>
