@@ -7,7 +7,7 @@
       <div class="slider">
         <div class="item" v-for="( item, idx ) in list" 
           :key="item.value + idx"
-          @click="onItemClick( item, idx )"
+          @click="selecedKey=item.value + idx"
           :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
         >
           <span class="font-item">{{ item.value }}</span>
@@ -53,11 +53,13 @@ export default {
   },
   data() {
     return {
+      posX: 0,
       slider: null,
       sliderWrapper: null, // wrapper는 overflow: hidden을 slider에 직접 먹였을때 요소가 짤려서 나오기때문에 만든것
       childOffsetWidth: 0, // item의 offsetWidth ( margin, padding 포함 )
+      itemWidth: 0,
+      dragClientX: 0,
       mouseStatus: false,
-
       selecedKey: null,
       leftButtonActive: false,
       rightButtonActive: true
@@ -70,7 +72,6 @@ export default {
       this.$nextTick( () => { // UI가 생성되고 나서 init 진행
         this.slider = this.$refs.sliderWrapper.firstChild
         this.sliderWrapper = this.$refs.sliderWrapper
-
         if( this.fillAuto ) { // sliderWapper크기에 맞추어 item의 크기를 자동으로 맞춰줌
           for( let i = 0; i < this.slider.childNodes.length; i++ ) {
             this.slider.childNodes[i].style.width = ( this.sliderWrapper.clientWidth / this.displayCount ) + 'px' // * 나중에 border에 대한 값 구해야할듯 *
@@ -80,45 +81,60 @@ export default {
       } )
     },
     moveLeft() {
-      if( this.sliderWrapper.scrollLeft <= 0 ) { // overflow 방지
+      if( this.posX <= 0 ) { // overflow 방지
         this.leftButtonActive = false
-        this.sliderWrapper.scrollLeft = 0
+        this.posX = 0
         return
       }
       
-      if( this.sliderWrapper.scrollLeft < this.childOffsetWidth * this.moveCounter ) { // 잔여물
+      if( Math.abs( this.posX ) < Math.abs( this.childOffsetWidth ) * this.moveCounter ) { // 잔여물
         this.sliderWrapper.scrollLeft = 0
+        this.posX = 0
         return
       }
-
-      this.sliderWrapper.scrollLeft = ( this.sliderWrapper.scrollLeft - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
+      this.posX = ( this.posX - ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1 // 정확하게 재기 위해 소수점 1자리까지 계산 반환값이 문자열이라 * 1
+      this.sliderWrapper.scrollLeft = Math.abs( this.posX * 1 )
     },
     moveRight() {
-      // 화면에서 보이는 left쪽에 붙어있는 시작거리는 this.sliderWrapper.scrollLeft
+      // 화면에서 보이는 left쪽에 붙어있는 시작거리는 this.posX
       const overflow = this.slider.offsetWidth - this.sliderWrapper.offsetWidth
-      if( overflow < this.sliderWrapper.scrollLeft ) { // 더 이동하는걸 방지
+      if( overflow < Math.abs( this.posX ) ) { // 더 이동하는걸 방지
         this.rightButtonActive = false
         return
       }
-
-      if( this.slider.offsetWidth - ( this.sliderWrapper.scrollLeft + this.sliderWrapper.offsetWidth ) < this.moveCounter * this.childOffsetWidth ) {
-        const residual = this.slider.offsetWidth + ( this.sliderWrapper.offsetWidth + this.sliderWrapper.scrollLeft ) // 잔여물
-        this.sliderWrapper.scrollLeft = Math.abs( this.sliderWrapper.scrollLeft - residual )
+      if( this.slider.offsetWidth - ( Math.abs( this.posX ) + this.sliderWrapper.offsetWidth ) < this.moveCounter * this.childOffsetWidth ) {
+        const residual = this.slider.offsetWidth + ( this.sliderWrapper.offsetWidth + Math.abs( this.posX ) ) // 잔여물
+        this.sliderWrapper.scrollLeft = Math.abs( this.posX - residual )
         return
       }
  
-      this.sliderWrapper.scrollLeft = ( this.sliderWrapper.scrollLeft + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
+      this.posX = ( this.posX + ( this.childOffsetWidth * this.moveCounter ) ).toFixed(1) * 1
+      this.sliderWrapper.scrollLeft = Math.abs( this.posX )
+    },
+    // 여기부터 스크롤 안쓰려고 만든건데 touch는 어떻게 할지 생각해야 할듯 ( 마우스만됨 )
+    mouseDown( event ) {
+      this.mouseStatus = true
+      this.dragClientX = event.clientX
+    },
+    mouseLeave() {
+      this.mouseStatus = false
+    },
+    mouseUp() {
+      this.mouseStatus = false
+    },
+    mouseMove( event ) {
+      if( !this.mouseStatus ) {
+        return
+      }
+      let offset = this.dragClientX - event.clientX
+      this.dragClientX = event.clientX
+      this.posX = ( this.posX - offset ).toFixed(1) * 1
+      this.slider.style.transform = `translateX(${this.posX}px)`
     },
     //스크롤 처리
     onScroll( event ) {
-      this.sliderWrapper.scrollLeft = event.target.scrollLeft
+      this.posX = event.target.scrollLeft
     },
-    onItemClick( item, idx ) {
-      const { value } = item
-      this.selecedKey = value + idx
-
-      this.$emit( 'selectedItem', item )
-    }
   }
 }
 </script>
@@ -127,7 +143,6 @@ export default {
   .wrapper {
     display: flex;
     width: 100%;
-
     .slider-wrapper {
       display: flex;
       flex: 1 1 auto;
@@ -135,24 +150,20 @@ export default {
       overflow: auto;
       user-select: none;
       scroll-behavior: smooth;
-
       .slider {
         display: flex;
         transition: 0.5s;
         flex: 1 0 auto;
         user-select: none;
-
         .item {
           display: flex;
           width: 100px;
           justify-content: center;
           align-items: center;
           user-select: none;
-
           &.selected {
            border-bottom: 12px solid #f4879a;
           }
-
           .font-item {
             font-size: 30px;
             font-weight: bold;
@@ -162,7 +173,6 @@ export default {
         }
       }
     }
-
     .button-left {
       display: flex;
       justify-content: center;
@@ -171,7 +181,6 @@ export default {
       z-index: 1;
       user-select: none;
     }
-
     .button-left::before {
         content: '';
         width: 20px; /* 사이즈 */
@@ -180,7 +189,6 @@ export default {
         border-right: 5px solid #f4879a; /* 선 두께 */
         transform: rotate(225deg); /* 각도 */
     }
-
     .button-right {
       display: flex;
       justify-content: center;
@@ -189,7 +197,6 @@ export default {
       z-index: 1;
       user-select: none;
     }
-
     .button-right::before {
       content: '';
       width: 20px; /* 사이즈 */
@@ -198,6 +205,14 @@ export default {
       border-right: 5px solid #f4879a; /* 선 두께 */
       transform: rotate(45deg); /* 각도 */
     }
-  }
 
+    // 스크롤숨김
+    .slider-wrapper {
+      -ms-overflow-style: none; /* IE and Edge */
+      scrollbar-width: none; /* Firefox */
+    }
+    .slider-wrapper::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera*/
+    }
+  }
 </style>
