@@ -147,14 +147,19 @@ export default {
           justify-content: center;
           align-items: center;
           user-select: none;
+
           &.selected {
            border-bottom: 12px solid #f4879a;
           }
+
           .font-item {
             font-size: 30px;
             font-weight: bold;
             text-align: center;
             color: #000000;
+            overflow:hidden; 
+            text-overflow:ellipsis; 
+            white-space:nowrap;
           }
         }
       }
