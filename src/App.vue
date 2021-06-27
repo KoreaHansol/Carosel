@@ -5,7 +5,7 @@
     :list="list"
     :fillAuto="true"
     :displayCount="5"
-    :moveCounter="2"
+    :moveCounter="3"
     />
   </div>
 </template>
