@@ -3,7 +3,7 @@
     <div class="button-left" @click="moveLeft" />
     <div class="slider-wrapper" ref="sliderWrapper" v-on:scroll="onScroll( $event )">
       <div class="slider">
-        <slot class="item" v-for="( item, idx ) in list" 
+        <slot class="item"
           name="comp"
           :list="list"
           :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
