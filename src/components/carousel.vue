@@ -5,11 +5,14 @@
       <div class="slider">
         <slot class="item"
           name="comp"
-          :list="list"
-          :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
-          @click="onSelectItem( item, idx )"
-        >
-          <span class="font-item" :key="idx">{{ item.value }}</span>
+          :list="list" >
+          <div class="item"
+            v-for="( item, idx ) in list" 
+            :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
+            :key="idx"
+            @click="onSelectItem( item, idx )" >
+            <div class="font-item">{{ item.value }}</div>
+          </div>
         </slot>
       </div>
     </div>
@@ -139,6 +142,7 @@ export default {
         transition: 0.5s;
         flex: 1 0 auto;
         user-select: none;
+
         .item {
           display: flex;
           width: 100px;
@@ -147,7 +151,7 @@ export default {
           user-select: none;
 
           &.selected {
-           border-bottom: 12px solid #f4879a;
+            border-bottom: 12px solid #f4879a;
           }
 
           .font-item {

@@ -5,7 +5,7 @@
     :list="list"
     :fillAuto="true"
     :displayCount="5"
-    :moveCounter="3"
+    :moveCounter="1"
     >
     <template slot-scope="{list}" slot="comp">
       <div
