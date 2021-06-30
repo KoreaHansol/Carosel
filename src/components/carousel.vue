@@ -1,21 +1,19 @@
 <template>
   <div class="wrapper">
-    <div class="button-left" 
-      @click="moveLeft" 
-    />
+    <div class="button-left" @click="moveLeft" />
     <div class="slider-wrapper" ref="sliderWrapper" v-on:scroll="onScroll( $event )">
       <div class="slider">
-        <div class="item" v-for="( item, idx ) in list" 
-          :key="item.value + idx"
-          @click="onSelectItem( item, idx )"
+        <slot class="item" v-for="( item, idx ) in list" 
+          name="comp"
+          :list="list"
           :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
+          @click="onSelectItem( item, idx )"
         >
-          <span class="font-item">{{ item.value }}</span>
-        </div>
+          <span class="font-item" :key="idx">{{ item.value }}</span>
+        </slot>
       </div>
     </div>
-    <div class="button-right" @click="moveRight"
-    />
+    <div class="button-right" @click="moveRight" />
   </div>
 </template>
 

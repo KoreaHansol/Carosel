@@ -7,7 +7,16 @@
     :displayCount="5"
     :moveCounter="3"
     @selectedItem="select"
-    />
+    >
+    <template slot-scope="{list}" slot="comp">
+      <div v-for="( item, idx ) in list"
+        class="item"
+        :class="{ selected: ( selecedKey === item.value + idx ) ? true : false }"
+        :key="item.value + idx"
+        @click="onSelectItem( item, idx )"
+      ><span class="font-item">{{ item.value }}</span></div>
+    </template>
+    </Carousel>
   </div>
 </template>
 
@@ -23,36 +32,59 @@ export default {
       list: [
         { value: '한식' },
         { value: '양식' },
-        { value: '한식3' },
-        { value: '한식4' },
-        { value: '한식5' },
-        { value: '한식6' },
-        { value: '한식7' },
-        { value: '한식8' },
-        { value: '한식9' },
-        { value: '한식10' },
-        { value: '한식11' },
-        { value: '한식12' },
-        { value: '한식13' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
+        { value: '한식' },
       ],
+      selecedKey: null,
     }
   },
   methods: {
-    select( item ) {
-      console.log( 'selected Item is : ', item )
-    }
+    onSelectItem( item, idx ) {
+      const { value } = item
+      this.selecedKey = value + idx
+    },
   }
 }
 </script>
 
-<style>
-#app {
+<style scoped lang="scss">
+  #app {
   display: flex;
   border: 1px solid black;
   width: 100%;
   height: 200px;
-}
-.carosel {
-  height: 50px;
-}
+  .item {
+    display: flex;
+    width: 100px;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+
+    &.selected {
+      border-bottom: 12px solid #f4879a;
+    }
+
+    .font-item {
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
+      color: #000000;
+      overflow:hidden; 
+      text-overflow:ellipsis; 
+      white-space:nowrap;
+    }
+  }
+  }
+  .carosel {
+    height: 50px;
+  }
 </style>
