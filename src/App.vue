@@ -8,6 +8,7 @@
     :moveCounter="2"
     :itemPaddingLeft="30"
     :itemPaddingRight="30"
+    :touchEndEventMode="false"
     >
     <template slot="leftBtn" class="btn">left</template>
     <template slot-scope="{list}" slot="comp">

@@ -70,6 +70,12 @@ export default {
         return 0
       }
     },
+    touchEndEventMode: { // 터치가 끝난후 이벤트
+      type: Boolean,
+      default() {
+        return false
+      }
+    },
   },
   created() {
     this.initCarousel()
@@ -91,6 +97,9 @@ export default {
       rightButtonActive: true,
       scrollDebounce: null,
       touchEnd: false,
+
+      //option
+      touchEndEventTimer: 700
     }
   },
   computed: {
@@ -168,7 +177,7 @@ export default {
             }
           }
           
-        }, 500 )
+        }, this.touchEndEventTimer )
       }
       return this.scrollDebounce
     },
@@ -188,7 +197,9 @@ export default {
       } else {
         this.rightButtonActive = true
       }
-      this.onScrollEventEndByTime(event)()
+      if( this.touchEndEventMode ) {
+        this.onScrollEventEndByTime(event)()
+      }
     },
     onTouchStart() {
       this.touchEnd = false
