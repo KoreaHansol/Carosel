@@ -4,9 +4,12 @@
     class="carosel"
     :list="list"
     :fillAuto="true"
-    :displayCount="5"
-    :moveCounter="1"
+    :displayCount="4"
+    :moveCounter="2"
+    :itemPaddingLeft="30"
+    :itemPaddingRight="30"
     >
+    <template slot="leftBtn" class="btn">left</template>
     <template slot-scope="{list}" slot="comp">
       <div
         v-for="( item, idx ) in list"
@@ -16,6 +19,7 @@
         @click="onSelectItem( item, idx )"
       ><span class="font-item">{{ item.value }}</span></div>
     </template>
+    <template slot="rightBtn" class="btn">right</template>
     </Carousel>
   </div>
 </template>
@@ -38,6 +42,22 @@ export default {
         { value: '한식6' },
         { value: '한식7' },
         { value: '한식8' },
+        { value: '한식11' },
+        { value: '한식22' },
+        { value: '한식33' },
+        { value: '한식44' },
+        { value: '한식55' },
+        { value: '한식66' },
+        { value: '한식77' },
+        { value: '한식88' },
+        { value: '한식19' },
+        { value: '한식29' },
+        { value: '한식39' },
+        { value: '한식49' },
+        { value: '한식59' },
+        { value: '한식69' },
+        { value: '한식79' },
+        { value: '한식89' },
        
       ],
       selecedKey: null,
@@ -83,5 +103,12 @@ export default {
   }
   .carosel {
     height: 50px;
+
+    .btn {
+      z-index: 1;
+      background: red;
+      width: 50px;
+      height: 50px;
+    }
   }
 </style>
